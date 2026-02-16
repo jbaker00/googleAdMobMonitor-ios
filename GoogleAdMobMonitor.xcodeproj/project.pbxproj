@@ -3,13 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		229197AFF86AAF2C5EEF7CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F8D7950BEC101DFDA497F5B /* Assets.xcassets */; };
 		2878968143D6A69C7755AE67 /* AdMobAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F11DF654F3484ACD72DCF92 /* AdMobAuthManager.swift */; };
 		63F4439786112DB5F48246DF /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A8F47B2D788E2198F062E7 /* StatsViewModel.swift */; };
 		72169B6BB12E4C504DC1E579 /* GoogleAdMobMonitorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109FFAA3417F02A84EBD24CB /* GoogleAdMobMonitorApp.swift */; };
+		8B0C4DEB9D955E039C2675C5 /* googleAdModMonitor2-ios.png in Resources */ = {isa = PBXBuildFile; fileRef = DD65A5675CC1F3C5D6421539 /* googleAdModMonitor2-ios.png */; };
 		8FBE2C0A9D5F79D034AFA70A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 9EFC322079969062647B26BA /* GoogleSignIn */; };
 		B160A8EA1FCDECD65AA670A9 /* AdMobAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F901D396211C85A5D7F18E4A /* AdMobAPIClient.swift */; };
 		D0836D58C86C27F448BC7590 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86476672858787B15635B49F /* ContentView.swift */; };
@@ -18,9 +20,11 @@
 
 /* Begin PBXFileReference section */
 		109FFAA3417F02A84EBD24CB /* GoogleAdMobMonitorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdMobMonitorApp.swift; sourceTree = "<group>"; };
-		2B4B02AEC9A24E5ED771A41E /* GoogleAdMobMonitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoogleAdMobMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B4B02AEC9A24E5ED771A41E /* GoogleAdMobMonitor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GoogleAdMobMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F8D7950BEC101DFDA497F5B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86476672858787B15635B49F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9F11DF654F3484ACD72DCF92 /* AdMobAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobAuthManager.swift; sourceTree = "<group>"; };
+		DD65A5675CC1F3C5D6421539 /* googleAdModMonitor2-ios.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "googleAdModMonitor2-ios.png"; sourceTree = "<group>"; };
 		E5A8F47B2D788E2198F062E7 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
 		F901D396211C85A5D7F18E4A /* AdMobAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobAPIClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,8 +63,10 @@
 			children = (
 				F901D396211C85A5D7F18E4A /* AdMobAPIClient.swift */,
 				9F11DF654F3484ACD72DCF92 /* AdMobAuthManager.swift */,
+				5F8D7950BEC101DFDA497F5B /* Assets.xcassets */,
 				86476672858787B15635B49F /* ContentView.swift */,
 				109FFAA3417F02A84EBD24CB /* GoogleAdMobMonitorApp.swift */,
+				DD65A5675CC1F3C5D6421539 /* googleAdModMonitor2-ios.png */,
 				E5A8F47B2D788E2198F062E7 /* StatsViewModel.swift */,
 			);
 			path = GoogleAdMobMonitor;
@@ -74,6 +80,7 @@
 			buildConfigurationList = 1CE7760C3683A2A4015012A8 /* Build configuration list for PBXNativeTarget "GoogleAdMobMonitor" */;
 			buildPhases = (
 				46ED6B0A7DD64E51CF4BA3FC /* Sources */,
+				B354DE0E0D4E37B013D47273 /* Resources */,
 				8303C817E75FFA407E756461 /* Frameworks */,
 			);
 			buildRules = (
@@ -99,6 +106,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					3B9E78A4DF8AC25D034B9E5C = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -116,6 +124,7 @@
 			packageReferences = (
 				4E07363E6C81415BE9C18CCA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -123,6 +132,18 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B354DE0E0D4E37B013D47273 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				229197AFF86AAF2C5EEF7CAF /* Assets.xcassets in Resources */,
+				8B0C4DEB9D955E039C2675C5 /* googleAdModMonitor2-ios.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		46ED6B0A7DD64E51CF4BA3FC /* Sources */ = {
@@ -203,7 +224,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G3P9A8Z2NP;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -234,7 +255,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G3P9A8Z2NP;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
