@@ -342,6 +342,50 @@ final class AdMobAPIClient {
     return entries
   }
 
+  /// Returns aggregated estimated earnings (micros) and currency for the requested date range.
+  func payoutTotal(parentAccountName: String, dateRangeOption: DateRangeOption, accessToken: String) async throws -> (micros: Int64, currency: String) {
+    let (start, end) = dateRangeOption.dateRange()
+    let cal = Calendar.current
+    let startDC = cal.dateComponents([.year, .month, .day], from: start)
+    let endDC = cal.dateComponents([.year, .month, .day], from: end)
+
+    let requestBody = GenerateNetworkReportRequest(
+      reportSpec: NetworkReportSpec(
+        dateRange: DateRange(
+          startDate: ReportDate(year: startDC.year ?? 2000, month: startDC.month ?? 1, day: startDC.day ?? 1),
+          endDate: ReportDate(year: endDC.year ?? 2000, month: endDC.month ?? 1, day: endDC.day ?? 1)
+        ),
+        dimensions: nil,
+        metrics: ["ESTIMATED_EARNINGS"],
+        localizationSettings: LocalizationSettings(currencyCode: nil, languageCode: "en-US")
+      )
+    )
+
+    var req = URLRequest(url: baseURL.appending(path: "\(parentAccountName)/networkReport:generate"))
+    req.httpMethod = "POST"
+    req.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+    req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    req.httpBody = try JSONEncoder().encode(requestBody)
+
+    let (data, resp) = try await URLSession.shared.data(for: req)
+    try Self.ensureOK(resp)
+
+    let stream = try JSONDecoder().decode([GenerateNetworkReportResponse].self, from: data)
+
+    let currency = stream.compactMap { $0.header?.localizationSettings?.currencyCode }.first ?? ""
+    let rows = stream.compactMap { $0.row }
+
+    // Sum earnings from all rows (should be single aggregated row when no dimensions).
+    var total: Int64 = 0
+    for row in rows {
+      let metrics = row.metricValues ?? [:]
+      let earnings = Int64(metrics["ESTIMATED_EARNINGS"]?.microsValue ?? "0") ?? 0
+      total += earnings
+    }
+
+    return (micros: total, currency: currency)
+  }
+
   private static func ensureOK(_ resp: URLResponse) throws {
     guard let http = resp as? HTTPURLResponse else { return }
     guard (200..<300).contains(http.statusCode) else {

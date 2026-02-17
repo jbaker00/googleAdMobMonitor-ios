@@ -140,26 +140,35 @@ struct ContentView: View {
             Text("Apps (\(report.appBreakdown.count))")
           }
 
-          // Payout history (last 6 months)
-          if !viewModel.payoutHistory.isEmpty {
-            Section {
-              ForEach(viewModel.payoutHistory) { entry in
-                HStack {
-                  VStack(alignment: .leading) {
-                    Text(entry.monthLabel).font(.caption).foregroundStyle(.secondary)
-                    Text(entry.appName).font(.subheadline).lineLimit(1)
-                  }
-                  Spacer()
-                  Text(report.currencyCode + " " + entry.estimatedEarningsFormatted)
+          // Payout: show total for selected time period; expand for details when All Time
+          Section {
+            HStack {
+              VStack(alignment: .leading) {
+                Text("Payout")
+                  .font(.caption)
+                  .foregroundStyle(.secondary)
+                if let micros = viewModel.payoutTotalMicros {
+                  let units = Double(micros) / 1_000_000.0
+                  Text((viewModel.payoutCurrency.isEmpty ? report.currencyCode : viewModel.payoutCurrency) + " " + String(format: "%.2f", units))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.green)
+                } else {
+                  Text("—")
+                    .font(.subheadline)
                 }
-                .padding(.vertical, 4)
               }
-            } header: {
-              Text("Payout history (all time)")
+
+              Spacer()
+
+              if viewModel.selectedDateRange == .allTime {
+                NavigationLink("Details") {
+                  PayoutDetailsView(viewModel: viewModel, reportCurrency: report.currencyCode)
+                }
+              }
             }
+          } header: {
+            Text("Payout")
           }
         }
         .listStyle(.insetGrouped)

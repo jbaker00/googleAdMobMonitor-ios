@@ -8,6 +8,38 @@ final class StatsViewModel: ObservableObject {
   @Published var errorMessage: String?
   @Published var selectedDateRange: DateRangeOption = .monthToDate
   @Published var payoutHistory: [PayoutEntry] = []
+  @Published var payoutTotalMicros: Int64? = nil
+  @Published var payoutCurrency: String = ""
+
+  // Load detailed payouts on demand (for all-time view). Tracks whether details have been loaded.
+  private(set) var payoutDetailsLoaded = false
+
+  // Public convenience: load payout details using stored auth/account info
+  func loadPayoutDetails() async {
+    guard !payoutDetailsLoaded else { return }
+    do {
+      let accessToken = try await auth.accessToken()
+      let accounts = try await api.listAccounts(accessToken: accessToken)
+      guard let account = accounts.first else { return }
+      payoutHistory = try await api.payoutHistory(parentAccountName: account.name, months: 0, accessToken: accessToken)
+      payoutDetailsLoaded = true
+    } catch {
+      payoutHistory = []
+      payoutDetailsLoaded = false
+    }
+  }
+
+  // Internal version if caller already has account/accessToken
+  func loadPayoutDetailsIfNeeded(parentAccountName: String, accessToken: String) async {
+    guard !payoutDetailsLoaded else { return }
+    do {
+      payoutHistory = try await api.payoutHistory(parentAccountName: parentAccountName, months: 0, accessToken: accessToken)
+      payoutDetailsLoaded = true
+    } catch {
+      payoutHistory = []
+      payoutDetailsLoaded = false
+    }
+  }
 
   private let auth = AdMobAuthManager()
   private let api = AdMobAPIClient()
@@ -59,11 +91,14 @@ final class StatsViewModel: ObservableObject {
       let detailedReport = try await api.detailedReport(parentAccountName: account.name, dateRangeOption: selectedDateRange, accessToken: accessToken)
       report = detailedReport
 
-      // Load payout history (all time). Failure to load payouts shouldn't break the main report.
+      // Load only the payout total for the selected date range. Detailed history is loaded on demand.
       do {
-        payoutHistory = try await api.payoutHistory(parentAccountName: account.name, months: 0, accessToken: accessToken)
+        let (micros, currency) = try await api.payoutTotal(parentAccountName: account.name, dateRangeOption: selectedDateRange, accessToken: accessToken)
+        payoutTotalMicros = micros
+        payoutCurrency = currency
       } catch {
-        payoutHistory = []
+        payoutTotalMicros = nil
+        payoutCurrency = ""
       }
     } catch {
       errorMessage = error.localizedDescription
