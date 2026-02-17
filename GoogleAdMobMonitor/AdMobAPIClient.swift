@@ -286,9 +286,15 @@ final class AdMobAPIClient {
   func payoutHistory(parentAccountName: String, months: Int = 6, accessToken: String) async throws -> [PayoutEntry] {
     let cal = Calendar.current
     let end = Date()
-    // Start at the first day of the month `months - 1` months ago
-    let thisMonthStart = cal.date(from: cal.dateComponents([.year, .month], from: end)) ?? end
-    let start = cal.date(byAdding: .month, value: -(max(1, months) - 1), to: thisMonthStart) ?? thisMonthStart
+    // If months <= 0 treat as "all time" and pick a safe early date, otherwise compute start as months ago
+    let start: Date
+    if months <= 0 {
+      start = cal.date(from: DateComponents(year: 2010, month: 1, day: 1)) ?? end
+    } else {
+      // Start at the first day of the month `months - 1` months ago
+      let thisMonthStart = cal.date(from: cal.dateComponents([.year, .month], from: end)) ?? end
+      start = cal.date(byAdding: .month, value: -(months - 1), to: thisMonthStart) ?? thisMonthStart
+    }
 
     let startDC = cal.dateComponents([.year, .month, .day], from: start)
     let endDC = cal.dateComponents([.year, .month, .day], from: end)

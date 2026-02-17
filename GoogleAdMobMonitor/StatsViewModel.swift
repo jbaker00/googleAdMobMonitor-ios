@@ -59,9 +59,9 @@ final class StatsViewModel: ObservableObject {
       let detailedReport = try await api.detailedReport(parentAccountName: account.name, dateRangeOption: selectedDateRange, accessToken: accessToken)
       report = detailedReport
 
-      // Load payout history (last 6 months). Failure to load payouts shouldn't break the main report.
+      // Load payout history (all time). Failure to load payouts shouldn't break the main report.
       do {
-        payoutHistory = try await api.payoutHistory(parentAccountName: account.name, months: 6, accessToken: accessToken)
+        payoutHistory = try await api.payoutHistory(parentAccountName: account.name, months: 0, accessToken: accessToken)
       } catch {
         payoutHistory = []
       }

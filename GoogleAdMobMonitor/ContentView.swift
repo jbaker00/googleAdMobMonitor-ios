@@ -158,7 +158,7 @@ struct ContentView: View {
                 .padding(.vertical, 4)
               }
             } header: {
-              Text("Payout history (last 6 months)")
+              Text("Payout history (all time)")
             }
           }
         }
