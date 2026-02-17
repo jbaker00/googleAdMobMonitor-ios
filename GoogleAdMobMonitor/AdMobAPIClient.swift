@@ -154,6 +154,19 @@ struct AppStats: Identifiable {
   var adRequestsFormatted: String { adRequests.formatted() }
 }
 
+// Payout entry represents estimated earnings for a given app and month.
+struct PayoutEntry: Identifiable {
+  let appId: String
+  let appName: String
+  let monthLabel: String // e.g. "2025-09" or display label
+  let estimatedEarningsMicros: Int64
+  var id: String { "\(appId)-\(monthLabel)" }
+  var estimatedEarningsFormatted: String {
+    let units = Double(estimatedEarningsMicros) / 1_000_000.0
+    return String(format: "%.2f", units)
+  }
+}
+
 struct DetailedReport {
   let dateRange: String
   let currencyCode: String
@@ -267,6 +280,60 @@ final class AdMobAPIClient {
       totalStats: totalStats,
       appBreakdown: appBreakdown
     )
+  }
+
+  /// Retrieve estimated earnings by APP and MONTH for the last `months` months.
+  func payoutHistory(parentAccountName: String, months: Int = 6, accessToken: String) async throws -> [PayoutEntry] {
+    let cal = Calendar.current
+    let end = Date()
+    // Start at the first day of the month `months - 1` months ago
+    let thisMonthStart = cal.date(from: cal.dateComponents([.year, .month], from: end)) ?? end
+    let start = cal.date(byAdding: .month, value: -(max(1, months) - 1), to: thisMonthStart) ?? thisMonthStart
+
+    let startDC = cal.dateComponents([.year, .month, .day], from: start)
+    let endDC = cal.dateComponents([.year, .month, .day], from: end)
+
+    let requestBody = GenerateNetworkReportRequest(
+      reportSpec: NetworkReportSpec(
+        dateRange: DateRange(
+          startDate: ReportDate(year: startDC.year ?? 2000, month: startDC.month ?? 1, day: startDC.day ?? 1),
+          endDate: ReportDate(year: endDC.year ?? 2000, month: endDC.month ?? 1, day: endDC.day ?? 1)
+        ),
+        dimensions: ["APP", "MONTH"],
+        metrics: ["ESTIMATED_EARNINGS"],
+        localizationSettings: LocalizationSettings(currencyCode: nil, languageCode: "en-US")
+      )
+    )
+
+    var req = URLRequest(url: baseURL.appending(path: "\(parentAccountName)/networkReport:generate"))
+    req.httpMethod = "POST"
+    req.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+    req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    req.httpBody = try JSONEncoder().encode(requestBody)
+
+    let (data, resp) = try await URLSession.shared.data(for: req)
+    try Self.ensureOK(resp)
+
+    let stream = try JSONDecoder().decode([GenerateNetworkReportResponse].self, from: data)
+    let rows = stream.compactMap { $0.row }
+
+    var entries: [PayoutEntry] = []
+    for row in rows {
+      let appId = row.dimensionValues?["APP"]?.value ?? "Unknown"
+      let appName = row.dimensionValues?["APP"]?.displayLabel ?? appId
+      let monthLabel = row.dimensionValues?["MONTH"]?.value ?? row.dimensionValues?["MONTH"]?.displayLabel ?? ""
+      let metrics = row.metricValues ?? [:]
+      let earnings = Int64(metrics["ESTIMATED_EARNINGS"]?.microsValue ?? "0") ?? 0
+      entries.append(PayoutEntry(appId: appId, appName: appName, monthLabel: monthLabel, estimatedEarningsMicros: earnings))
+    }
+
+    // Sort by month desc then earnings desc
+    entries.sort { lhs, rhs in
+      if lhs.monthLabel == rhs.monthLabel { return lhs.estimatedEarningsMicros > rhs.estimatedEarningsMicros }
+      return lhs.monthLabel > rhs.monthLabel
+    }
+
+    return entries
   }
 
   private static func ensureOK(_ resp: URLResponse) throws {

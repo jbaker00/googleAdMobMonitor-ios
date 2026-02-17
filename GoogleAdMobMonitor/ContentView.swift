@@ -90,7 +90,7 @@ struct ContentView: View {
         .padding(.vertical)
         .background(Color(.systemGroupedBackground))
         
-        // App breakdown table
+        // App breakdown table and payout history
         List {
           Section {
             ForEach(report.appBreakdown) { app in
@@ -138,6 +138,28 @@ struct ContentView: View {
             }
           } header: {
             Text("Apps (\(report.appBreakdown.count))")
+          }
+
+          // Payout history (last 6 months)
+          if !viewModel.payoutHistory.isEmpty {
+            Section {
+              ForEach(viewModel.payoutHistory) { entry in
+                HStack {
+                  VStack(alignment: .leading) {
+                    Text(entry.monthLabel).font(.caption).foregroundStyle(.secondary)
+                    Text(entry.appName).font(.subheadline).lineLimit(1)
+                  }
+                  Spacer()
+                  Text(report.currencyCode + " " + entry.estimatedEarningsFormatted)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.green)
+                }
+                .padding(.vertical, 4)
+              }
+            } header: {
+              Text("Payout history (last 6 months)")
+            }
           }
         }
         .listStyle(.insetGrouped)

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,7 +20,7 @@
 
 /* Begin PBXFileReference section */
 		109FFAA3417F02A84EBD24CB /* GoogleAdMobMonitorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdMobMonitorApp.swift; sourceTree = "<group>"; };
-		2B4B02AEC9A24E5ED771A41E /* GoogleAdMobMonitor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GoogleAdMobMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B4B02AEC9A24E5ED771A41E /* GoogleAdMobMonitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoogleAdMobMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F8D7950BEC101DFDA497F5B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86476672858787B15635B49F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9F11DF654F3484ACD72DCF92 /* AdMobAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobAuthManager.swift; sourceTree = "<group>"; };
@@ -106,7 +106,6 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					3B9E78A4DF8AC25D034B9E5C = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -124,7 +123,6 @@
 			packageReferences = (
 				4E07363E6C81415BE9C18CCA /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -224,7 +222,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = G3P9A8Z2NP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -255,7 +253,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = G3P9A8Z2NP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
