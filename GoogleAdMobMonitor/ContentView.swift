@@ -39,137 +39,21 @@ struct ContentView: View {
   private var statsView: some View {
     VStack(spacing: 0) {
       if viewModel.isLoading {
-        ProgressView("Loading report…")
+        ProgressView("Loading reports…")
           .padding()
-      } else if let report = viewModel.report {
-        // Date range picker
-        Picker("Time Period", selection: $viewModel.selectedDateRange) {
-          ForEach(DateRangeOption.allCases) { option in
-            Text(option.rawValue).tag(option)
-          }
-        }
-        .pickerStyle(.segmented)
-        .padding()
-        .onChange(of: viewModel.selectedDateRange) { _, _ in
-          Task { await viewModel.refresh() }
-        }
-        
-        // Summary section
-        VStack(alignment: .leading, spacing: 8) {
-          Text("Total (\(report.totalStats.dateRange))")
-            .font(.headline)
-            .padding(.horizontal)
-          
-          Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 8) {
-            GridRow {
-              Text("Currency:").foregroundStyle(.secondary)
-              Text(report.currencyCode).fontWeight(.medium)
-            }
-            GridRow {
-              Text("Earnings:").foregroundStyle(.secondary)
-              Text(report.currencyCode + " " + report.totalStats.estimatedEarningsFormatted)
-                .fontWeight(.semibold)
-                .foregroundStyle(.green)
-            }
-            GridRow {
-              Text("Impressions:").foregroundStyle(.secondary)
-              Text(report.totalStats.impressionsFormatted).fontWeight(.medium)
-            }
-            GridRow {
-              Text("Clicks:").foregroundStyle(.secondary)
-              Text(report.totalStats.clicksFormatted).fontWeight(.medium)
-            }
-            GridRow {
-              Text("Requests:").foregroundStyle(.secondary)
-              Text(report.totalStats.adRequestsFormatted).fontWeight(.medium)
-            }
-          }
-          .font(.system(.body, design: .rounded))
-          .padding(.horizontal)
-        }
-        .padding(.vertical)
-        .background(Color(.systemGroupedBackground))
-        
-        // App breakdown table and payout history
+      } else if let multiReport = viewModel.multiPeriodReport {
         List {
-          Section {
-            ForEach(report.appBreakdown) { app in
-              VStack(alignment: .leading, spacing: 6) {
-                Text(app.displayName)
-                  .font(.headline)
-                  .lineLimit(1)
-                
-                HStack {
-                  VStack(alignment: .leading, spacing: 2) {
-                    Text("Earnings")
-                      .font(.caption)
-                      .foregroundStyle(.secondary)
-                    Text(report.currencyCode + " " + app.estimatedEarningsFormatted)
-                      .font(.subheadline)
-                      .fontWeight(.semibold)
-                      .foregroundStyle(.green)
-                  }
-                  
-                  Spacer()
-                  
-                  VStack(alignment: .trailing, spacing: 2) {
-                    Text("Impressions")
-                      .font(.caption)
-                      .foregroundStyle(.secondary)
-                    Text(app.impressionsFormatted)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                  }
-                  
-                  Spacer()
-                  
-                  VStack(alignment: .trailing, spacing: 2) {
-                    Text("Clicks")
-                      .font(.caption)
-                      .foregroundStyle(.secondary)
-                    Text(app.clicksFormatted)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                  }
-                }
-                .font(.system(.caption, design: .rounded))
-              }
-              .padding(.vertical, 4)
-            }
-          } header: {
-            Text("Apps (\(report.appBreakdown.count))")
-          }
-
-          // Payout: show total for selected time period; expand for details when All Time
-          Section {
-            HStack {
-              VStack(alignment: .leading) {
-                Text("Payout")
-                  .font(.caption)
-                  .foregroundStyle(.secondary)
-                if let micros = viewModel.payoutTotalMicros {
-                  let units = Double(micros) / 1_000_000.0
-                  Text((viewModel.payoutCurrency.isEmpty ? report.currencyCode : viewModel.payoutCurrency) + " " + String(format: "%.2f", units))
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.green)
-                } else {
-                  Text("—")
-                    .font(.subheadline)
-                }
-              }
-
-              Spacer()
-
-              if viewModel.selectedDateRange == .allTime {
-                NavigationLink("Details") {
-                  PayoutDetailsView(viewModel: viewModel, reportCurrency: report.currencyCode)
-                }
-              }
-            }
-          } header: {
-            Text("Payout")
-          }
+          // Today Section
+          timePeriodSection(report: multiReport.today, currency: multiReport.currencyCode)
+          
+          // Yesterday Section
+          timePeriodSection(report: multiReport.yesterday, currency: multiReport.currencyCode)
+          
+          // Last 7 Days Section
+          timePeriodSection(report: multiReport.last7Days, currency: multiReport.currencyCode)
+          
+          // Last 30 Days Section
+          timePeriodSection(report: multiReport.last30Days, currency: multiReport.currencyCode)
         }
         .listStyle(.insetGrouped)
       } else {
@@ -204,6 +88,148 @@ struct ContentView: View {
           .foregroundStyle(.red)
           .font(.caption)
           .padding(.horizontal)
+      }
+    }
+  }
+  
+  @ViewBuilder
+  private func timePeriodSection(report: TimePeriodReport, currency: String) -> some View {
+    Section {
+      // Total earnings for this period
+      VStack(alignment: .leading, spacing: 8) {
+        HStack {
+          Text("Total Earnings")
+            .font(.headline)
+          Spacer()
+          Text(currency + " " + report.totalStats.estimatedEarningsFormatted)
+            .font(.title3)
+            .fontWeight(.bold)
+            .foregroundStyle(.green)
+        }
+        
+        // Additional metrics
+        HStack(spacing: 20) {
+          VStack(alignment: .leading, spacing: 2) {
+            Text("Impressions")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+            Text(report.totalStats.impressionsFormatted)
+              .font(.subheadline)
+              .fontWeight(.medium)
+          }
+          
+          VStack(alignment: .leading, spacing: 2) {
+            Text("Clicks")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+            Text(report.totalStats.clicksFormatted)
+              .font(.subheadline)
+              .fontWeight(.medium)
+          }
+          
+          VStack(alignment: .leading, spacing: 2) {
+            Text("Requests")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+            Text(report.totalStats.adRequestsFormatted)
+              .font(.subheadline)
+              .fontWeight(.medium)
+          }
+        }
+        .font(.system(.caption, design: .rounded))
+      }
+      .padding(.vertical, 8)
+      
+      // Apps breakdown
+      if !report.appBreakdown.isEmpty {
+        VStack(alignment: .leading, spacing: 12) {
+          Text("By App")
+            .font(.headline)
+            .foregroundStyle(.secondary)
+            .padding(.top, 8)
+          
+          ForEach(report.appBreakdown) { app in
+            HStack {
+              VStack(alignment: .leading, spacing: 4) {
+                Text(app.displayName)
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+                  .lineLimit(1)
+                
+                HStack(spacing: 16) {
+                  Label(app.impressionsFormatted, systemImage: "eye")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                  Label(app.clicksFormatted, systemImage: "hand.tap")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+              }
+              
+              Spacer()
+              
+              Text(currency + " " + app.estimatedEarningsFormatted)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.green)
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+          }
+        }
+      }
+      
+      // Countries breakdown
+      if !report.countryBreakdown.isEmpty {
+        VStack(alignment: .leading, spacing: 12) {
+          Text("By Country")
+            .font(.headline)
+            .foregroundStyle(.secondary)
+            .padding(.top, 8)
+          
+          ForEach(report.countryBreakdown) { country in
+            HStack {
+              VStack(alignment: .leading, spacing: 4) {
+                Text(country.displayName)
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+                  .lineLimit(1)
+                
+                HStack(spacing: 16) {
+                  Label(country.impressionsFormatted, systemImage: "eye")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                  Label(country.clicksFormatted, systemImage: "hand.tap")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+              }
+              
+              Spacer()
+              
+              Text(currency + " " + country.estimatedEarningsFormatted)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.green)
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+          }
+        }
+      }
+    } header: {
+      HStack {
+        Text(report.periodLabel)
+          .font(.title3)
+          .fontWeight(.bold)
+        Spacer()
+        Text(report.dateRange)
+          .font(.caption)
+          .foregroundStyle(.secondary)
       }
     }
   }

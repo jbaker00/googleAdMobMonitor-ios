@@ -5,6 +5,7 @@ final class StatsViewModel: ObservableObject {
   @Published private(set) var isSignedIn = false
   @Published private(set) var isLoading = false
   @Published private(set) var report: DetailedReport?
+  @Published private(set) var multiPeriodReport: MultiPeriodReport?
   @Published var errorMessage: String?
   @Published var selectedDateRange: DateRangeOption = .monthToDate
   @Published var payoutHistory: [PayoutEntry] = []
@@ -88,8 +89,14 @@ final class StatsViewModel: ObservableObject {
         throw NSError(domain: "AdMob", code: 1, userInfo: [NSLocalizedDescriptionKey: "No AdMob accounts found for this Google user."])
       }
 
-      let detailedReport = try await api.detailedReport(parentAccountName: account.name, dateRangeOption: selectedDateRange, accessToken: accessToken)
-      report = detailedReport
+      // Fetch both the standard report and the multi-period report
+      async let detailedReportTask = api.detailedReport(parentAccountName: account.name, dateRangeOption: selectedDateRange, accessToken: accessToken)
+      async let multiPeriodReportTask = api.multiPeriodReport(parentAccountName: account.name, accessToken: accessToken)
+      
+      let (fetchedDetailedReport, fetchedMultiPeriodReport) = try await (detailedReportTask, multiPeriodReportTask)
+      
+      report = fetchedDetailedReport
+      multiPeriodReport = fetchedMultiPeriodReport
 
       // Load only the payout total for the selected date range. Detailed history is loaded on demand.
       do {
@@ -103,6 +110,7 @@ final class StatsViewModel: ObservableObject {
     } catch {
       errorMessage = error.localizedDescription
       report = nil
+      multiPeriodReport = nil
     }
   }
 }

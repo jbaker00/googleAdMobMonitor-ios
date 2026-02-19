@@ -64,7 +64,7 @@
 				5F8D7950BEC101DFDA497F5B /* Assets.xcassets */,
 				86476672858787B15635B49F /* ContentView.swift */,
 				109FFAA3417F02A84EBD24CB /* GoogleAdMobMonitorApp.swift */,
-					E5A8F47B2D788E2198F062E7 /* StatsViewModel.swift */,
+				E5A8F47B2D788E2198F062E7 /* StatsViewModel.swift */,
 			);
 			path = GoogleAdMobMonitor;
 			sourceTree = "<group>";
@@ -236,7 +236,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamesbaker.googleAdMobMonitor;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -266,7 +266,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamesbaker.googleAdMobMonitor;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
